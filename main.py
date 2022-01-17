@@ -1,4 +1,5 @@
 from mpi4py import MPI
+from sys import argv
 import math
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -13,7 +14,8 @@ def find_myself(column, row, sqrt_cell):
 
 
 if rank == 0:  # manager
-    with open("input-output/input5.txt") as f:
+    filename = argv[1]
+    with open(f"input-output/{filename}") as f:
         N, wave, c = [int(x) for x in f.readline().split()]
         future_towers = f.readlines()
 
@@ -119,7 +121,7 @@ else:
     column = data["column"] + 1
     part_map = data["part_map"]
     sqrt_cell = len(part_map[0])
-    N = sqrt_cell*size**(1/2)
+    N = sqrt_cell*(P**(1/2))
 
     for i in range(wave):
         myself_towers = comm.recv(source=0, tag=22)
@@ -272,8 +274,11 @@ else:
             area = [[{"type": "."} for y in range(size + 2)]
                     for i in range(size + 2)]  # 5x5
             # area[1:-1][1:-1] = part_map
-            # print(len(part_map))
+            
+            # print(f"{N=} {P=}")
+            # print(size)
             for i in range(size):
+                # print(i)
                 area[i+1][1:-1] = part_map[i]
             if top_neighbour != None:
                 area[0][1:-1] = top_neighbour
